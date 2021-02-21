@@ -44,10 +44,22 @@ char* strtoupper(char* str)
 	return str;
 }
 
+std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return str;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+    return str;
+}
+
 /// Logs output from the build
 void log(LogSeverity severity, const char *out)
 {
-    cout << severityToString(severity) << ": " << out << endl;
+    string severityString = severityToString(severity) + string(": ");
+    cout << severityString << replaceAll(out, "\n", "\n"+string(severityString.size(), ' ')) << endl;
 }
 
 void stripExtension(const char *in, char *out, size_t len)

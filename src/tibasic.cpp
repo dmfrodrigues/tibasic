@@ -42,19 +42,35 @@ size_t Compiler::sumBytes(const char *data, size_t len)
     return ret;
 }
 
+std::string trim(const std::string& str, const std::string& whitespace = " \t\r"){
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos) return ""; // no content
+
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
 bool Compiler::compile(string inFile, string outFile)
 {
     ifstream f(inFile.c_str(), ifstream::in);
 
     string tmpLine;
+    string line;
 
     // Output information ready for writing the compiled code to a file.
     vector<token_t> output;
     unsigned short outputSize = 0;
 
+    int lineIdx = 0;
     while(!f.eof())
     {
         getline(f, tmpLine, '\n');
+        tmpLine = trim(tmpLine);
+        line = tmpLine;
+
+        lineIdx++;
 
         if(!tmpLine.length())
             continue;
@@ -62,6 +78,7 @@ bool Compiler::compile(string inFile, string outFile)
         // Parse.
         token_t token;
 
+        size_t fromLineStart = 0;
         while(tmpLine.length())
         {
             // Grab the longest possible token we can from the input.
@@ -87,7 +104,9 @@ bool Compiler::compile(string inFile, string outFile)
             if(!s.length())
             {
                 // Error, asplode!
-                log(Error, "Invalid token.");
+                string to_print = "Invalid token in line "+to_string(lineIdx)+": ";
+                size_t size = to_print.size();
+                log(Error, string(to_print+line+"\n"+string(size+fromLineStart, ' ')+"^").c_str());
                 f.close();
                 return false;
             }
@@ -98,6 +117,8 @@ bool Compiler::compile(string inFile, string outFile)
 
                 tmpLine = tmpLine.substr(s.length(), tmpLine.length());
             }
+
+            fromLineStart += s.length();
         }
 
         // Output a newline.

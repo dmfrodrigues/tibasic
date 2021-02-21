@@ -6,3 +6,4 @@ build-etc/*sdf
 build-etc/*suo
 build-etc/*vcxproj.*
 src/*.o
+tibasic

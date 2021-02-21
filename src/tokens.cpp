@@ -45,8 +45,8 @@ struct ConvertRule {
 };
 
 /// References to lists defined after functions.
-extern struct Token StandardTokens[199];
-extern struct TwoByte CalcVars[302];
+extern struct Token StandardTokens[214];
+extern struct TwoByte CalcVars[325];
 extern struct ConvertRule Replacements[39];
 
 /// string -> token mapping
@@ -166,7 +166,11 @@ bool lookupToken(unsigned short in, string &out)
 #define STARROW			0x17
 #define STARROWPLUS		0x18
 #define MAX				0x19
-#define MIN				0x1B
+#define MIN				0x1A
+#define R_TO_PR			0x1B
+#define R_TO_PTHETA		0x1C
+#define P_TO_RX			0x1D
+#define P_TO_RY			0x1E
 #define MEDIAN			0x1F
 #define RANDM			0x20
 #define MEAN			0x21
@@ -716,6 +720,55 @@ bool lookupToken(unsigned short in, string &out)
 #define MODBOXPLOT		0x5ABB
 #define NORMPROBPLOT	0x5BBB
 
+/** EF VARIABLES (added on TI-84+(C(S)E)) **/
+#define SET_DATE		0x00EF
+#define SET_TIME		0x01EF
+#define CHECK_TMR		0x02EF
+#define SET_DT_FMT		0x03EF
+#define SET_TM_FMT		0x04EF
+#define TIME_CND		0x05EF
+#define DAY_OF_WK		0x06EF
+#define GET_DT_STR		0x07EF
+#define GET_TM_STR		0x08EF
+#define GET_DATE		0x09EF
+#define GET_TIME		0x0AEF
+#define START_TMR		0x0BEF
+#define GET_DT_FMT		0x0CEF
+#define GET_TM_FMT		0x0DEF
+#define IS_CLOCK_ON		0x0EEF
+#define CLOCK_OFF		0x0FEF
+
+#define CLOCK_ON		0x10EF
+#define OPEN_LIB		0x11EF
+#define EXEC_LIB		0x12EF
+#define INV_T			0x13EF
+#define CHI2_GOF_TEST	0x14EF
+#define LIN_REG_T_INT	0x15EF
+#define MANUAL_FIT		0x16EF
+#define ZQUADRANT1		0x17EF
+#define ZFRAC12			0x18EF
+#define ZFRAC13			0x19EF
+#define ZFRAC14			0x1AEF
+#define ZFRAC15			0x1BEF
+#define ZFRAC18			0x1CEF
+#define ZFRAC110		0x1DEF
+#define MATHRPINTBOX	0x1EEF
+
+#define _ND__UND		0x30EF
+#define _F__D			0x31EF
+#define REMAINDER		0x32EF
+#define SUMMATION		0x33EF
+#define LOG_BASE		0x30EF
+#define RAND_INT_NO_REP	0x30EF
+#define MATHPRINT		0x30EF
+#define CLASSIC			0x30EF
+#define ND				0x30EF
+#define UND				0x30EF
+#define AUTO			0x30EF
+#define DEC				0x30EF
+#define FRAC			0x30EF
+#define FRAC_APPROX		0x30EF
+
 // Standard Tokens are any token that can be used anywhere in the line.
 struct Token StandardTokens[] = {
 	/** CONTROL page of PROGRAM EDITOR (press PRGM when EDITING a program) **/
@@ -780,11 +833,13 @@ struct Token StandardTokens[] = {
 	{ TO_DEC,			"->DEC"			},
 	{ TO_FRAC,			"->FRAC"		},
 	{ STORE,			"->"			},
+	{ STORE,			"→"				},
 	{ BOXPLOT,			"BoxPlot"		},
 	{ RADIANS,			"[radians]"		},
 	{ DEGREES,			"[degrees]"		},
 	{ INVERSE,			"^-1"			},
 	{ SQUARE,			"^2"			},
+	{ SQUARE,			"²"				},
 	{ TRANSPOSE,		"[transpose]"	},
 	{ CUBE,				"^3"			},
 	{ ROUND,			"round("		},
@@ -796,6 +851,10 @@ struct Token StandardTokens[] = {
 	{ STARROWPLUS,		"*row+("		},
 	{ MAX,				"max("			},
 	{ MIN,				"min("			},
+	{ R_TO_PR,			"R►Pr("			},
+	{ R_TO_PTHETA,		"R►Pθ("			},
+	{ P_TO_RX,			"P►Rx("			},
+	{ P_TO_RY,			"P►Ry("			},
 	{ MEDIAN,			"median("		},
 	{ RANDM,			"randM("		},
 	{ MEAN,				"mean("			},
@@ -805,12 +864,14 @@ struct Token StandardTokens[] = {
 	{ NDERIV,			"NDeriv("		},
 	{ FMIN,				"FMin("			},
 	{ FMAX,				"FMax("			},
+	{ IMAG_I,			"[i]"			},
 	{ CUBICREG,			"CubicReg "		},
 	{ QUARTREG,			"QuartReg "		},
 	{ LOGIC_OR,			" or "			},
 	{ LOGIC_XOR,		" xor "			},
-	{ LOGIC_AND,		"and"			},
+	{ LOGIC_AND,		" and "			},
 	{ STR_THETA,		"[theta]"		},
+	{ STR_THETA,		"θ"				},
 	{ PROGRAM,			"prgm"			},
 	{ RADIAN,			"Radian"		},
 	{ DEGREE,			"Degree"		},
@@ -819,8 +880,11 @@ struct Token StandardTokens[] = {
 	{ ENG,				"Eng"			},
 	{ FLOAT,			"Float"			},
 	{ TEST_LOREQU,		"<="			},
+	{ TEST_LOREQU,		"≤"				},
 	{ TEST_GOREQU,		">="			},
+	{ TEST_GOREQU,		"≥"				},
 	{ TEST_NOTEQUAL,	"!="			},
+	{ TEST_NOTEQUAL,	"≠"				},
 	{ ANSWER,			"Ans"			},
 	{ FIX,				"Fix "			},
 	{ HORIZ,			"Horiz"			},
@@ -874,8 +938,11 @@ struct Token StandardTokens[] = {
 	{ DRAWINV,			"DrawInv "		},
 	{ DRAWF,			"DrawF "		},
 	{ PI,				"[pi]"			},
+	{ PI,				"π"				},
 	{ GETKEY,			"getKey"		},
 	{ NEGATIVE,			"[neg]"			},
+	{ NEGATIVE,			"⁻"				},
+	{ NEGATIVE,			"~"				},
 	{ CONV_INT,			"int("			},
 	{ ABS,				"abs("			},
 	{ DETERMINANT,		"det("			},
@@ -887,6 +954,7 @@ struct Token StandardTokens[] = {
 	{ IPART,			"iPart("		},
 	{ FPART,			"fPart("		},
 	{ SQR_ROOT,			"[root]^2"		},
+	{ SQR_ROOT,			"√("			},
 	{ CUBE_ROOT,		"[root]^3"		},
 	{ NATLOG,			"ln("			},
 	{ ETOPOWER,			"e^"			},
@@ -934,7 +1002,7 @@ struct Token StandardTokens[] = {
 struct TwoByte CalcVars[] = {
 	// AsmPrgm (uncompiled)
 	{ 0x6CBB,			"AsmPrgm"	},
-	{ 0x6DBB,			"AsmPrgm"	}, // this means decompilation works, but compilation won't hit this
+	// { 0x6DBB,			"AsmPrgm"	}, // this means decompilation works, but compilation won't hit this
 
 	// SysVar
 	{ MAT_A,			"[A]"		},
@@ -948,25 +1016,45 @@ struct TwoByte CalcVars[] = {
 	{ MAT_I,			"[I]"		},
 	{ MAT_J,			"[J]"		},
 	{ L1,				"L1"		},
+	{ L1,				"L₁"		},
 	{ L2,				"L2"		},
+	{ L2,				"L₂"		},
 	{ L3,				"L3"		},
+	{ L3,				"L₃"		},
 	{ L4,				"L4"		},
+	{ L4,				"L₄"		},
 	{ L5,				"L5"		},
+	{ L5,				"L₅"		},
 	{ L6,				"L6"		},
+	{ L6,				"L₆"		},
 	{ L7,				"L7"		},
+	{ L7,				"L₇"		},
 	{ L8,				"L8"		},
+	{ L8,				"L₈"		},
 	{ L9,				"L9"		},
+	{ L9,				"L₉"		},
 	{ L0,				"L0"		},
+	{ L0,				"L₀"		},
 	{ Y1,				"Y1"		},
+	{ Y1,				"Y₁"		},
 	{ Y2,				"Y2"		},
+	{ Y2,				"Y₂"		},
 	{ Y3,				"Y3"		},
+	{ Y3,				"Y₃"		},
 	{ Y4,				"Y4"		},
+	{ Y4,				"Y₄"		},
 	{ Y5,				"Y5"		},
+	{ Y5,				"Y₅"		},
 	{ Y6,				"Y6"		},
+	{ Y6,				"Y₆"		},
 	{ Y7,				"Y7"		},
+	{ Y7,				"Y₇"		},
 	{ Y8,				"Y8"		},
+	{ Y8,				"Y₈"		},
 	{ Y9,				"Y9"		},
+	{ Y9,				"Y₉"		},
 	{ Y0,				"Y0"		},
+	{ Y0,				"Y₀"		},
 	{ X1T,				"X1T"		},
 	{ Y1T,				"Y1T"		},
 	{ X2T,				"X2T"		},
@@ -1107,7 +1195,9 @@ struct TwoByte CalcVars[] = {
 	{ TSTEP,			"Tstep"		},
 	{ THETASTEP,		"theta_step"},
 	{ DELTAX,			"delta_X"	},
+	{ DELTAX,			"∆X"		},
 	{ DELTAY,			"delta_Y"	},
+	{ DELTAY,			"∆Y"		},
 	{ XFACT,			"XFact"		},
 	{ YFACT,			"YFact"		},
 	{ TBLINPUT,			"TblInput"	},
@@ -1161,8 +1251,8 @@ struct TwoByte CalcVars[] = {
 	{ DBD,				"dbd("			},
 	{ LCM,				"lcm("			},
 	{ GCD,				"gcd("			},
-	{ RANDINT,			"RandInt("		},
-	{ RANDBIN,			"RandBin("		},
+	{ RANDINT,			"randInt("		},
+	{ RANDBIN,			"randBin("		},
 	{ SUB,				"sub("			},
 	{ STDDEV,			"StdDev("		},
 	{ VARIANCE,			"variance("		},
@@ -1243,6 +1333,8 @@ struct TwoByte CalcVars[] = {
 	{ ANOVA,			"ANOVA("		},
 	{ MODBOXPLOT,		"ModBoxPlot"	},
 	{ NORMPROBPLOT,		"NormProbPlot"	},
+	{ REMAINDER,		"remainder("	},
+	{ GET_TIME,			"getTime"		},
 };
 
 // Replacements
